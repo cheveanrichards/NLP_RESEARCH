@@ -139,8 +139,8 @@ categorized_data = IncidentCategorizer(pattern_dict).calculate_probabilities(upd
 # Define thresholds
 thresholds = {
     'pilot_error_pattern': (0.40, None),  # At least 0.33
-    'weather_condition_pattern': (0, 1),  # Less than 0.33
-    'engine_fail_pattern': (0, 1)  # At least 0.33
+    'weather_condition_pattern': (0, 0.5),  # Less than 0.33
+    'engine_fail_pattern': (0, 0.5)  # At least 0.33
 }
 
 # Filter and copy incidents

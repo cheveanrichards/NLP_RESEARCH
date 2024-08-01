@@ -142,4 +142,11 @@ class KnowledgeGraph:
         """
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
+
+    #6 Method to convert from JSON to dict
+    def to_dict(self, file_path):
+        # Example JSON file
+        with open(file_path) as json_file:
+            dict_data = json.load(json_file)
+        return dict_data
     

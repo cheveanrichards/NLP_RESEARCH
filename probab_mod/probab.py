@@ -84,73 +84,95 @@ class IncidentCategorizer:
             if meets_criteria:
                 pprint(key)
 
-    def filter_and_copy_incidents(self, categorized_data, thresholds, source_path, dest_path, f=None):
-            """
-            Filter incidents based on user-defined probability thresholds and copy matching files to a destination folder.
-            If the destination folder exists, it will be removed and recreated.
 
-            Args:
-            - categorized_data (dict): Dictionary with filenames as keys and dictionaries of probabilities as values.
-            - thresholds (dict): Dictionary with category names as keys and tuples of (min_threshold, max_threshold) as values.
-                                Use None for no threshold.
-            - source_path (str): Path to the source directory containing the original files.
-            - dest_path (str): Path to the destination directory where matching files will be copied.
-            - f (object): Optional file system operations object. If None, built-in operations will be used.
 
-            Returns:
-            - list: List of filenames that were successfully copied.
-            """
-            if f is None:
-                f = FileSystemOps()
 
-            copied_files = []
 
-            # Remove destination directory if it exists
-            if f.exists(dest_path):
-                f.rmtree(dest_path)
 
-            # Create destination directory
-            f.makedirs(dest_path)
 
-            for key, val in categorized_data.items():
-                meets_criteria = True
-                for category, (min_threshold, max_threshold) in thresholds.items():
-                    if category not in val:
-                        meets_criteria = False
-                        break
-                    if min_threshold is not None and val[category] < min_threshold:
-                        meets_criteria = False
-                        break
-                    if max_threshold is not None and val[category] >= max_threshold:
-                        meets_criteria = False
-                        break
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#     def filter_and_copy_incidents(self, categorized_data, thresholds, source_path, dest_path, f=None):
+#             """
+#             Filter incidents based on user-defined probability thresholds and copy matching files to a destination folder.
+#             If the destination folder exists, it will be removed and recreated.
+
+#             Args:
+#             - categorized_data (dict): Dictionary with filenames as keys and dictionaries of probabilities as values.
+#             - thresholds (dict): Dictionary with category names as keys and tuples of (min_threshold, max_threshold) as values.
+#                                 Use None for no threshold.
+#             - source_path (str): Path to the source directory containing the original files.
+#             - dest_path (str): Path to the destination directory where matching files will be copied.
+#             - f (object): Optional file system operations object. If None, built-in operations will be used.
+
+#             Returns:
+#             - list: List of filenames that were successfully copied.
+#             """
+#             if f is None:
+#                 f = FileSystemOps()
+
+#             copied_files = []
+
+#             # Remove destination directory if it exists
+#             if f.exists(dest_path):
+#                 f.rmtree(dest_path)
+
+#             # Create destination directory
+#             f.makedirs(dest_path)
+
+#             for key, val in categorized_data.items():
+#                 meets_criteria = True
+#                 for category, (min_threshold, max_threshold) in thresholds.items():
+#                     if category not in val:
+#                         meets_criteria = False
+#                         break
+#                     if min_threshold is not None and val[category] < min_threshold:
+#                         meets_criteria = False
+#                         break
+#                     if max_threshold is not None and val[category] >= max_threshold:
+#                         meets_criteria = False
+#                         break
                 
-                if meets_criteria:
-                    source_file = f.path_join(source_path, key)
-                    dest_file = f.path_join(dest_path, key)
-                    if f.exists(source_file):
-                        f.copy(source_file, dest_file)
-                        copied_files.append(key)
-                        print(f"Copied: {key}")
-                    else:
-                        print(f"File not found: {key}")
+#                 if meets_criteria:
+#                     source_file = f.path_join(source_path, key)
+#                     dest_file = f.path_join(dest_path, key)
+#                     if f.exists(source_file):
+#                         f.copy(source_file, dest_file)
+#                         copied_files.append(key)
+#                         print(f"Copied: {key}")
+#                     else:
+#                         print(f"File not found: {key}")
 
-            return copied_files
+#             return copied_files
             
 
-class FileSystemOps:
-    """Default file system operations class."""
-    def makedirs(self, path, exist_ok=False):
-        os.makedirs(path, exist_ok=exist_ok)
+# class FileSystemOps:
+#     """Default file system operations class."""
+#     def makedirs(self, path, exist_ok=False):
+#         os.makedirs(path, exist_ok=exist_ok)
 
-    def path_join(self, *paths):
-        return os.path.join(*paths)
+#     def path_join(self, *paths):
+#         return os.path.join(*paths)
 
-    def exists(self, path):
-        return os.path.exists(path)
+#     def exists(self, path):
+#         return os.path.exists(path)
 
-    def copy(self, src, dst):
-        shutil.copy2(src, dst)
+#     def copy(self, src, dst):
+#         shutil.copy2(src, dst)
 
-    def rmtree(self, path):
-        shutil.rmtree(path)
+#     def rmtree(self, path):
+#         shutil.rmtree(path)

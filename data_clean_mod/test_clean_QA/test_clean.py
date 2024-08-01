@@ -75,6 +75,7 @@ removal_dict = {"Aviation Investigation Final Report": ["location","aircraft dam
 
 updated_knowledgeGraph = myTestKnowledgeGraph.word_removal(removal_dict)
 
-myTestKnowledgeGraph.to_json(updated_knowledgeGraph,os.path.join(current_directory, '.','myGraph'))
+myTestKnowledgeGraph.to_json(updated_knowledgeGraph,os.path.join(current_directory, '..', '..','Store','myGraph.json'))
 
-pprint(updated_knowledgeGraph)
+
+# pprint(myTestKnowledgeGraph.to_dict(os.path.join(current_directory, '.','myGraph.json')))
