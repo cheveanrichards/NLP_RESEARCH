@@ -22,7 +22,7 @@ recommender = LLM_RECOMMENDER(api_key)
 
 cluster_location =  os.path.abspath(os.path.join(current_directory, '..','..', 'probab_mod/test_probab_QA/tempdir'))
 
-recommender = LLM_RECOMMENDER('sk-None-uAcHNDlaauMkL9wTAqGHT3BlbkFJgekPKq3Re7YMkY55hWlM')
+recommender = LLM_RECOMMENDER('')
 
 recommender.read_all_pdfs_in_directory(cluster_location)
 
