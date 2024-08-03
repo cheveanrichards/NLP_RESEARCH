@@ -10,7 +10,7 @@ sys.path.append(Recommender_path)
 
 from LLM import Recommender
 
-recommender = Recommender('r8_eufX0MsnkDPThACGujefvWK4d8xtm721f2ADO')
+recommender = Recommender('')
 
 # Set the model
 llama2_7b_chat = "meta/llama-2-7b-chat:8e6975e5ed6174911a6ff3d60540dfd4844201974602551e10e9e87ab143d81e"
