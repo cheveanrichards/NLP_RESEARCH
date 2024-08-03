@@ -2,8 +2,6 @@ import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import subprocess
-import sys
-import os
 
 class WatchDogHandler(FileSystemEventHandler):
     def __init__(self, script_to_run, python_interpreter):

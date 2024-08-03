@@ -1,34 +1,33 @@
-import os
 import sys
-#  # Set your OpenAI API key
-# openai_api_key = os.getenv("OPENAI_API_KEY")
+import os
 
-#     # Ensure the API key is set
-# if not openai_api_key:
-#     raise ValueError("OpenAI API key not set. Please set the OPENAI_API_KEY environment variable.")
-
-
-# Setup directory paths
+# Step 1: Construct the relative paths to the directories containing myclass1.py and myclass2.py
 current_directory = os.path.dirname(__file__)
 Recommender_path = os.path.join(current_directory, '..')
 
+# Step 2: Add the directories to the Python path
 sys.path.append(Recommender_path)
 
+from LLM import Recommender
 
-# import class
-from LLM import LLM_RECOMMENDER
+recommender = Recommender('r8_eufX0MsnkDPThACGujefvWK4d8xtm721f2ADO')
 
-recommender = LLM_RECOMMENDER(api_key)
+# Set the model
+llama2_7b_chat = "meta/llama-2-7b-chat:8e6975e5ed6174911a6ff3d60540dfd4844201974602551e10e9e87ab143d81e"
+recommender.set_model(llama2_7b_chat)
 
-cluster_location =  os.path.abspath(os.path.join(current_directory, '..','..', 'probab_mod/test_probab_QA/tempdir'))
+# Set the data path
+current_directory = os.path.dirname(__file__)
+store_location = os.path.abspath(os.path.join(current_directory, '..', '..', 'Store'))
 
-recommender = LLM_RECOMMENDER('sk-None-uAcHNDlaauMkL9wTAqGHT3BlbkFJgekPKq3Re7YMkY55hWlM')
+# Load the data and create the index
+recommender.load_data(store_location)
 
-recommender.read_all_pdfs_in_directory(cluster_location)
+# Create the query engine
+recommender.create_query_engine()
 
-# # Get recommendations for a specific file
-# file_name = "example.txt"
-# print(recommender.analyze_file(file_name))
-    
-# Get general recommendations for all files
-print(recommender.analyze_all_pdfs())
+# # Query the data
+# response = recommender.query("How many files have fatal accidents and what is the common cause for fatal accidents. How would you prevent?")
+# print(response)
+
+print(recommender.index)
