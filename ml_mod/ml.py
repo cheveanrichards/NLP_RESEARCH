@@ -1,9 +1,9 @@
 import json
+import os
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
 from sklearn.metrics import silhouette_score
 import numpy as np
-import os
 
 class ReportProcessor:
     def __init__(self, json_file_path):
@@ -18,29 +18,21 @@ class ReportProcessor:
     def get_embedding(self, text_list):
         return self.model.encode(text_list)
     
-    def get_section_embedding(self, report_key, section_key):
-        if report_key in self.data and section_key in self.data[report_key]:
-            section_text = self.data[report_key][section_key]
-            return self.get_embedding(section_text)
-        else:
-            raise KeyError(f"Section '{section_key}' not found in report '{report_key}'.")
-
-    def get_combined_embeddings(self, report_key, section_keys):
-        combined_embeddings = []
+    def get_section_embedding(self, report_key, section_keys):
+        combined_text = []
         for section_key in section_keys:
-            if section_key in self.data[report_key]:
+            if report_key in self.data and section_key in self.data[report_key]:
                 section_text = self.data[report_key][section_key]
-                embeddings = self.get_embedding(section_text)
-                combined_embeddings.append(embeddings.mean(axis=0))
+                combined_text.extend(section_text)
             else:
                 raise KeyError(f"Section '{section_key}' not found in report '{report_key}'.")
-        return np.concatenate(combined_embeddings)
+        return self.get_embedding(combined_text).mean(axis=0)
 
     def get_all_combined_embeddings(self, section_keys):
         all_embeddings = {}
         for report_key in self.data:
             try:
-                combined_embedding = self.get_combined_embeddings(report_key, section_keys)
+                combined_embedding = self.get_section_embedding(report_key, section_keys)
                 all_embeddings[report_key] = combined_embedding
             except KeyError as e:
                 print(e)
@@ -90,4 +82,25 @@ class ReportProcessor:
             clustered_reports[cluster_id].append(report_key)
         
         return clustered_reports
+
+    def save_clustered_reports(self, clustered_reports, output_dir):
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        
+        for cluster_id, report_keys in clustered_reports.items():
+            cluster_dir = os.path.join(output_dir, f'cluster_{cluster_id}')
+            if not os.path.exists(cluster_dir):
+                os.makedirs(cluster_dir)
+            for report_key in report_keys:
+                report_data = {report_key: self.data[report_key]}
+                output_file = os.path.join(cluster_dir, f'{report_key}.json')
+                with open(output_file, 'w') as file:
+                    json.dump(report_data, file, indent=4)
+    
+    def cluster_and_save_reports(self, section_keys, output_dir, num_clusters=None, method='kmeans', metric='euclidean'):
+        clustered_reports = self.cluster_reports(section_keys, num_clusters, method, metric)
+        self.save_clustered_reports(clustered_reports, output_dir)
+        return clustered_reports
+
+
     

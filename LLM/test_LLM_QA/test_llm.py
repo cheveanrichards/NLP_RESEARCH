@@ -18,10 +18,13 @@ recommender.set_model(llama2_7b_chat)
 
 # Set the data path
 current_directory = os.path.dirname(__file__)
-store_location = os.path.abspath(os.path.join(current_directory, '..', '..', 'Store'))
+# store_location = os.path.abspath(os.path.join(current_directory, '..', '..', 'Store'))
+
+
+cluster_location = os.path.abspath(os.path.join(current_directory, '..', '..','Store', 'cluster_7'))
 
 # Load the data and create the index
-recommender.load_data(store_location)
+recommender.load_data(cluster_location)
 
 # Create the query engine
 recommender.create_query_engine()
@@ -30,4 +33,10 @@ recommender.create_query_engine()
 # response = recommender.query("How many files have fatal accidents and what is the common cause for fatal accidents. How would you prevent?")
 # print(response)
 
-print(recommender.index)
+# Query the data
+response = recommender.query("What are the similarities in the accidents and provides one safety measure?")
+print(response)
+
+
+
+
