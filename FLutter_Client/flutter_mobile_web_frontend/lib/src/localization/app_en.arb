@@ -1,0 +1,6 @@
+{
+  "appTitle": "flutter_mobile_web_frontend",
+  "@appTitle": {
+    "description": "The title of the application"
+  }
+}
