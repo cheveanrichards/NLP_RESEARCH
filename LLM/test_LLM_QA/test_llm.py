@@ -10,18 +10,18 @@ sys.path.append(Recommender_path)
 
 from LLM import Recommender
 
-recommender = Recommender('')
+recommender = Recommender()
 
 # Set the model
-llama2_7b_chat = "meta/llama-2-7b-chat:8e6975e5ed6174911a6ff3d60540dfd4844201974602551e10e9e87ab143d81e"
-recommender.set_model(llama2_7b_chat)
+llama3 = "meta/meta-llama-3-8b-instruct"
+recommender.set_model(llama3)
 
 # Set the data path
 current_directory = os.path.dirname(__file__)
 # store_location = os.path.abspath(os.path.join(current_directory, '..', '..', 'Store'))
 
 
-cluster_location = os.path.abspath(os.path.join(current_directory, '..', '..','Store', 'cluster_7'))
+cluster_location = os.path.abspath(os.path.join(current_directory, '..', '..','Store', 'cluster_5'))
 
 # Load the data and create the index
 recommender.load_data(cluster_location)
@@ -34,7 +34,7 @@ recommender.create_query_engine()
 # print(response)
 
 # Query the data
-response = recommender.query("What are the similarities in the accidents and provides one safety measure?")
+response = recommender.query("What are the similarities in Analysis and pilot information. Provide recommendation and preventive measure")
 print(response)
 
 

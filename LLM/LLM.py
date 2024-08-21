@@ -11,7 +11,7 @@ class Recommender:
         self.query_engine = None
         self.set_api_token(api_token)
 
-    def set_model(self, model_name, temperature=0.4, top_p=.1, max_new_tokens=300):
+    def set_model(self, model_name, temperature=0.1, top_p=1, max_new_tokens=300):
         Settings.llm = Replicate(
             model=model_name,
             temperature=temperature,
