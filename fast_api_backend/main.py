@@ -9,9 +9,27 @@ app = FastAPI()
 # Step 1: Construct the relative paths to the directories containing myclass1.py and myclass2.py
 current_directory = os.path.dirname(__file__)
 store_location = os.path.abspath(os.path.join(current_directory, '..','Store', 'KnowledgeGraph','myGraph.json'))
+generator_path = os.path.abspath(os.path.join(current_directory, '..','Hugging_face_LLMs'))
+saved_model_path = os.path.abspath(os.path.join(current_directory, '..','Hugging_face_LLMs','test_QA_LLM','saved_model'))
 
 # Step 2: Add the directories to the Python path
 sys.path.append(store_location)
+sys.path.append(generator_path)
+sys.path.append(saved_model_path)
+
+
+from GPT2_LLM import GPT2TextGenerator
+generator = GPT2TextGenerator()
+
+#load generator and provide prompt to reformat json file to provide return value
+#loading generator takes time so it is good to load on server starting then promp engine via GET,PUT, POST, DELETE 
+prompt = "refactor/ reformating prompt on a given file path or json object"
+generator.load_model(saved_model_path, temperature=0.8, top_p=0.95)
+response_after_load = generator.generate_text(prompt)
+# print(response_after_load)
+
+
+
 
 origins = [
     "http://localhost",
