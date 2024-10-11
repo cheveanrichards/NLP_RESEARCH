@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import sys
@@ -12,21 +12,30 @@ store_location = os.path.abspath(os.path.join(current_directory, '..','Store', '
 generator_path = os.path.abspath(os.path.join(current_directory, '..','Hugging_face_LLMs'))
 saved_model_path = os.path.abspath(os.path.join(current_directory, '..','Hugging_face_LLMs','test_QA_LLM','saved_model'))
 
+replicate_path = os.path.abspath(os.path.join(current_directory, '..','Replicate_LLM'))
+
 # Step 2: Add the directories to the Python path
 sys.path.append(store_location)
 sys.path.append(generator_path)
 sys.path.append(saved_model_path)
-
+sys.path.append(replicate_path)
 
 from GPT2_LLM import GPT2TextGenerator
 generator = GPT2TextGenerator()
 
-#load generator and provide prompt to reformat json file to provide return value
-#loading generator takes time so it is good to load on server starting then promp engine via GET,PUT, POST, DELETE 
-prompt = "refactor/ reformating prompt on a given file path or json object"
-generator.load_model(saved_model_path, temperature=0.8, top_p=0.95)
-response_after_load = generator.generate_text(prompt)
-# print(response_after_load)
+from LLM import Recommender
+recommender = Recommender('')
+# Set the model
+llama3 = "meta/meta-llama-3-8b-instruct"
+recommender.set_model(llama3)
+
+
+# #load generator and provide prompt to reformat json file to provide return value
+# #loading generator takes time so it is good to load on server starting then promp engine via GET,PUT, POST, DELETE 
+# prompt = "refactor/ reformating prompt on a given file path or json object"
+# generator.load_model(saved_model_path, temperature=0.8, top_p=0.95)
+# response_after_load = generator.generate_text(prompt)
+# # print(response_after_load)
 
 
 
@@ -36,7 +45,11 @@ origins = [
     "http://localhost:8080",
     "http://localhost:55722",
     "http://localhost:57299",
-    "http://localhost:54128"
+    "http://localhost:54128",
+    "http://localhost:49333",
+    "http://localhost:49958",
+    "http://localhost:60543",
+    "http://localhost:53536"
 ]
 
 app.add_middleware(
@@ -47,9 +60,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-async def main():
-    return {"message": "Hello World"}
 
 # New route to serve JSON file
 @app.get("/knowlege_graph/")
@@ -69,6 +79,9 @@ async def serve_json():
 
 @app.get("/locations" )
 async def get_locations():
+# read file location full knowledge graph or cluster
+# use the gen ai to read a reformat in array [name, lattitude, logitude, details] provide sample format in prompt
+
     return [
     {
         "name": "Skwentna, Alaska",
@@ -90,5 +103,66 @@ async def get_locations():
     }
 ]
 
+# @app.post("/analyze_files/")
+# async def analyze_files(file_path: str = Body(...), prompt: str = Body(...)):
+#     if not os.path.exists(file_path):
+#         raise HTTPException(status_code=404, detail="File path not found")
+
+#     if not os.path.isdir(file_path):
+#         raise HTTPException(status_code=400, detail="Provided path is not a directory")
+
+#     try:
+#         # Get list of JSON files in the directory
+#         files = [f for f in os.listdir(file_path) if f.endswith('.json') and os.path.isfile(os.path.join(file_path, f))]
+
+#         if not files:
+#             return {
+#                 "file_path": file_path,
+#                 "files_analyzed": [],
+#                 "analysis": "No JSON files found in the specified directory."
+#             }
+
+#         # Read contents of JSON files
+#         file_contents = {}
+#         for file in files:
+#             file_path_full = os.path.join(file_path, file)
+#             try:
+#                 with open(file_path_full, 'r') as f:
+#                     file_contents[file] = json.load(f)
+#             except json.JSONDecodeError:
+#                 print(f"Warning: {file} is not a valid JSON file. Skipping.")
+
+#         # Prepare the prompt with file contents
+#         files_prompt = "\n".join([f"File: {name}\nContents: {contents}" 
+#                                   for name, contents in file_contents.items()])
+#         analysis_prompt = f"Analyze the following JSON files:\n\n{files_prompt}\n\n{prompt}"
+
+#         # Generate analysis using the GPT2 model
+#         generator.load_model(saved_model_path, temperature=0.8, top_p=0.95)
+#         analysis = generator.generate_text(analysis_prompt)
+
+#         return {
+#             "file_path": file_path,
+#             "files_analyzed": list(file_contents.keys()),
+#             "analysis": analysis
+#         }
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
 
+@app.get("/recommender/{cluster_name}")
+async def replicate_llm(cluster_name: str):
+    cluster_location = os.path.abspath(os.path.join(current_directory, '..', 'Store', f'{cluster_name}'))
+
+    if not os.path.exists(cluster_location):
+        raise HTTPException(status_code=404, detail=f"Cluster {cluster_name} not found")
+
+    # Load the data and create the index
+    recommender.load_data(cluster_location)
+
+    # Create the query engine
+    recommender.create_query_engine()
+
+    # Query the data
+    response = recommender.query("What insights can be made from the files in terms of cause of accident and preventive measures")
+    return response

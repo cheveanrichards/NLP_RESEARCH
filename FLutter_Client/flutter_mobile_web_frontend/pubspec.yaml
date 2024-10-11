@@ -17,6 +17,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_map: ^4.0.0  # Or the latest version
   latlong2: ^0.8.0     # For LatLng class
+  flutter_map_heatmap: any
 
 dev_dependencies:
   flutter_test:
