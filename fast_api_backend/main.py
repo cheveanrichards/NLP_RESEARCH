@@ -44,7 +44,7 @@ origins = [
     "http://localhost",
     "http://localhost:8080",
     "http://localhost:55722",
-    "http://localhost:57299",
+    "http://localhost:55257",
     "http://localhost:54128",
     "http://localhost:49333",
     "http://localhost:49958",
@@ -151,7 +151,7 @@ async def get_locations():
 
 
 @app.get("/recommender/{cluster_name}")
-async def replicate_llm(cluster_name: str):
+async def replicate_llm(cluster_name: str, prompt: str):
     cluster_location = os.path.abspath(os.path.join(current_directory, '..', 'Store', f'{cluster_name}'))
 
     if not os.path.exists(cluster_location):
@@ -163,6 +163,21 @@ async def replicate_llm(cluster_name: str):
     # Create the query engine
     recommender.create_query_engine()
 
-    # Query the data
-    response = recommender.query("What insights can be made from the files in terms of cause of accident and preventive measures")
+    # Query the data using the provided prompt
+    response = recommender.query(prompt)
     return response
+
+@app.get("/directories")
+async def get_directories():
+    store_path = os.path.abspath(os.path.join(current_directory, '..', 'Store'))
+    
+    if not os.path.exists(store_path):
+        raise HTTPException(status_code=404, detail="Store directory not found")
+    
+    try:
+        # Get all directory names in the Store folder
+        directories = [name for name in os.listdir(store_path) 
+                    if os.path.isdir(os.path.join(store_path, name))]
+        return directories
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
