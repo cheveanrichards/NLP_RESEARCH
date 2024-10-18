@@ -6,17 +6,19 @@ class RecommenderController {
   RecommenderController({required RecommenderService recommenderService})
       : _recommenderService = recommenderService;
 
-  Future<String> generateRecommendation(String clusterName) async {
+  Future<String> generateRecommendation(String clusterName, String prompt) async {
     try {
-      return await _recommenderService.getRecommendation(clusterName);
+      return await _recommenderService.getRecommendation(clusterName, prompt);
     } catch (e) {
       throw Exception('Failed to generate recommendation: $e');
     }
   }
 
-  // You can add more methods here if needed, such as fetching cluster names
-  Future<List<String>> getClusterNames() async {
-    // This is a placeholder. In a real app, you might fetch this from an API
-    return ['cluster_1', 'cluster2', 'cluster3'];
+  Future<List<String>> getDirectories() async {
+    try {
+      return await _recommenderService.getDirectories();
+    } catch (e) {
+      throw Exception('Failed to get directories: $e');
+    }
   }
 }
